@@ -1,6 +1,6 @@
 # **ETL proces datasetu MovieLens**
 
-Tento repozitár obsahuje implementáciu ETL procesu v Snowflake pre analýzu dát z **AmazonBooks** datasetu. Projekt sa zameriava na preskúmanie správania používateľov a ich čitateľských preferencií na základe hodnotení kníh a demografických údajov používateľov. Výsledný dátový model umožňuje multidimenzionálnu analýzu a vizualizáciu kľúčových metrik.
+Tento repozitár obsahuje implementáciu ETL procesu v Snowflake pre analýzu dát z **MovieLens** datasetu. Projekt sa zameriava na preskúmanie správania používateľov a ich preferencií vo výbere filmov na základe hodnotení filmov a demografických údajov používateľov. Výsledný dátový model umožňuje multidimenzionálnu analýzu a vizualizáciu kľúčových metrík.
 
 ---
 ## **1. Úvod a popis zdrojových dát**
