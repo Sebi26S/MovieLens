@@ -89,7 +89,7 @@ Parameter ON_ERROR = 'CONTINUE' zabezpečil, že proces importovania dát pokra�
 
 V tejto fáze boli dáta zo staging tabuliek vyčistené, transformované a obohatené. Hlavným cieľom bolo pripraviť dimenzie a faktovú tabuľku, ktoré umožnia jednoduchú a efektívnu analýzu.
 
-V tejto fáze sme vytvorili faktovú tabuľku Fact_Table, ktorá obsahuje kľúčové informácie pre analýzu hodnotení filmov. Táto tabuľka spája údaje z viacerých dimenzií, aby umožnila komplexnú analýzu interakcií používateľov s filmami, vrátane ich hodnotení a relevantnosti priradených tagov.
+Fact_Table:
 ```sql
 CREATE OR REPLACE TABLE Fact_Table AS
 SELECT
@@ -118,6 +118,56 @@ JOIN DIM_time d
     DIM_time_timeID
 FROM Fact_Table
 LIMIT 10;
+```
+  DIM_time:
+```sql
+
+CREATE OR REPLACE TABLE DIM_time AS
+SELECT
+    ROW_NUMBER() OVER (ORDER BY CAST(timestamp AS DATE)) AS dim_timeID,
+    CAST(timestamp AS DATE) AS date,
+    DATE_PART('day', timestamp) AS day,
+    DATE_PART('dow', timestamp) + 1 AS dayOfWeek,
+    CASE DATE_PART('dow', timestamp) + 1
+        WHEN 1 THEN 'Pondelok'
+        WHEN 2 THEN 'Utorok'
+        WHEN 3 THEN 'Streda'
+        WHEN 4 THEN 'Štvrtok'
+        WHEN 5 THEN 'Piatok'
+        WHEN 6 THEN 'Sobota'
+        WHEN 7 THEN 'Nedeľa'
+    END AS dayOfWeekAsString,
+    DATE_PART('month', timestamp) AS month,
+    DATE_PART('year', timestamp) AS year,
+    DATE_PART('quarter', timestamp) AS quarter,
+    DATE_PART('hour', timestamp) AS hour,
+    DATE_PART('minute', timestamp) AS minute,
+    DATE_PART('second', timestamp) AS second
+FROM rating_staging;
+```
+  DIM_user:
+```sql
+CREATE OR REPLACE TABLE DIM_user AS
+SELECT DISTINCT
+  userid AS userid
+FROM rating_staging;
+```
+  DIM_tag:
+```sql
+CREATE OR REPLACE TABLE DIM_tag AS
+SELECT DISTINCT
+  tagId AS tagid,
+  tag   AS tag
+FROM genome_tags_staging;
+```
+  DIM_movie:
+```sql
+CREATE OR REPLACE TABLE DIM_movie AS
+SELECT DISTINCT
+  movieId   AS movieid,
+  title     AS title,
+  genres    AS genres
+FROM movie_staging;
 ```
 ---
 ### **3.3 Load (Načítanie dát)**
@@ -167,7 +217,7 @@ LIMIT 10;
 ```
 ---
 ### **Graf 3: Hourly Rating Activity**
-Tento graf znázorňuje aktivitu používateľov pri hodnotení filmov podľa hodín dňa. Z vizualizácie je možné identifikovať časové obdobia s najväčšou aktivitou, pričom hodnotenia bývajú najčastejšie pridané vo večerných hodinách.
+Tento graf znázorňuje aktivitu používateľov pri hodnotení filmov podľa hodín dňa. Z vizualizácie je možné identifikovať časové obdobia s najväčšou aktivitou.
 
 ```sql
 SELECT 
@@ -206,7 +256,7 @@ ORDER BY d.year;
 ```
 ---
 ### **Graf 6: Most rated movies**
-Tento stĺpcový graf zobrazuje 10 filmov s najväčším počtom hodnotení. Umožňuje identifikovať najpopulárnejšie tituly medzi používateľmi, čo poskytuje prehľad o tom, ktoré filmy si získali najväčšiu pozornosť.
+Tento graf zobrazuje 10 filmov s najväčším počtom hodnotení. Umožňuje identifikovať najpopulárnejšie tituly medzi používateľmi, čo poskytuje prehľad o tom, ktoré filmy si získali najväčšiu pozornosť.
 
 ```sql
 SELECT 
