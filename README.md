@@ -242,7 +242,7 @@ GROUP BY d.month
 ORDER BY d.month;
 ```
 ---
-### **Ratings Trend by Year**
+### **Graf 5:Ratings Trend by Year**
 Tento graf znázorňuje počet hodnotení podľa rokov, čo umožňuje sledovať dlhodobé trendy v aktivite používateľov.
 
 ```sql
